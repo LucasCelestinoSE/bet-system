@@ -1,4 +1,7 @@
 # bet-system
+## Para instalar
 
-# Linha feita por lucas -> PipeLine CI/CD
-# Linha diego
+# Para rodar
+docker-compose up --build
+
+## 
