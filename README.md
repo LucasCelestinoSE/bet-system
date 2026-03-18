@@ -2,6 +2,6 @@
 ## Para instalar
 
 # Para rodar
-docker-compose up --build
+sudo docker-compose up --build
 
 ## 
