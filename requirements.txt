@@ -3,3 +3,4 @@ uvicorn==0.24.0
 pydantic==2.5.2
 pandas  # Provavelmente seu amigo usará para os palpites
 requests
+streamlit

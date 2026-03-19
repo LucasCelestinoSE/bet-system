@@ -28,3 +28,7 @@ async def check_surebet(data: OddCheck):
 @app.get("/")
 def read_root():
     return {"message": "API Online - Sistema de Apostas Iniciado"}
+
+@app.get("/olamundo")
+def ola_mundo():
+    return {"message:" "Olá mundo"}
