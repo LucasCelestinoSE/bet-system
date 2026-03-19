@@ -4,3 +4,5 @@ pydantic==2.5.2
 pandas  # Provavelmente seu amigo usará para os palpites
 requests
 streamlit
+httpx==0.27.0
+BeautifulSoup4
