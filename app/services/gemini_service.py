@@ -1,7 +1,7 @@
 import google.genai as genai
 import os
 from dotenv import load_dotenv
-
+from google.genai import errors
 load_dotenv()
 
 class GeminiService:
@@ -12,13 +12,20 @@ class GeminiService:
             raise ValueError("Chave GEMINI_API_KEY não encontrada no .env")
         
         self.client = genai.Client(api_key=api_key)
-        # 1.5-flash é mais estável para cotas gratuitas
-        self.model_name = "gemini-1.5-flash" 
+        self.model_name = "gemini-3-flash-preview" 
 
     async def ask_ai(self, prompt: str):
-        # Usamos await para não bloquear o worker do FastAPI
-        response = await self.client.models.generate_content(
-            model=self.model_name, 
-            contents=prompt
-        )
-        return response.text
+        try:
+            response =  await self.client.aio.models.generate_content(
+                model=self.model_name, 
+                contents=prompt
+            )
+            return response.text
+        
+        except errors.ClientError as e:
+            print(f"Erro de Cliente (API): {e}")
+            return f"Erro na API do Gemini: {e.message}"
+            
+        except Exception as e:
+            print(f" Erro inesperado: {type(e).__name__} - {e}")
+            return "Ocorreu um erro interno ao processar sua solicitação."

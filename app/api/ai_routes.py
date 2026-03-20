@@ -12,7 +12,6 @@ async def ask_gemini(prompt: str, service: GeminiService = Depends(get_gemini_se
     # 3. A rota agora é assíncrona
     resposta = await service.ask_ai(prompt)
     return {
-        "status": "sucesso",
         "pergunta": prompt,
         "resposta_ia": resposta
     }
