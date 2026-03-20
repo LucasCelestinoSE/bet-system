@@ -11,7 +11,7 @@ class NewsService:
             
             articles = []
             # Exemplo simplificado de seletor do GE
-            for item in soup.select('.feed-post-body')[:5]: 
+            for item in soup.select('.feed-post-body'): 
                 title = item.select_one('.feed-post-link').text
                 link = item.select_one('.feed-post-link')['href']
                 articles.append(FootballNews(title=title, url=link, source="GE", content=""))

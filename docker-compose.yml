@@ -8,6 +8,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    env_file:
+      - .env
 
   ui:
     build: .
@@ -17,4 +19,6 @@ services:
       - .:/app
     ports:
       - "8501:8501"
+    env_file:
+      - .env
     command: streamlit run app/presentation/home.py --server.port=8501 --server.address=0.0.0.0
