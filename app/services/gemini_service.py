@@ -45,9 +45,9 @@ class GeminiService:
         except Exception as e:
             print(f"🔥 Erro Multimodal: {e}")
             return f"Erro ao processar conteúdo: {str(e)}"
-        finally:
-            if temp_path and os.path.exists(temp_path):
-                os.remove(temp_path)
+        #finally:
+            #if temp_path and os.path.exists(temp_path):
+                #os.remove(temp_path)
         
         
 
