@@ -1,34 +1,72 @@
-import asyncio
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
+from seleniumbase import SB
+import os
+import re
+
 class FbrScrapper:
     def __init__(self):
-        # Agora a url pertence à instância da classe
-        self.file_path = "../../temp_2025-2026_Premier_League_Stats_tabelas.html"
+        self.url_history = "https://fbref.com/en/comps/9/history/Premier-League-Seasons"
+        
+    def extract_data_from_url(self, url):
+        with SB(uc=True) as sb:
+            sb.uc_open_with_reconnect(url, 4)
+            sb.uc_gui_click_captcha()
+            dict_data = {}
+            # Usamos outerHTML para manter a tag <tbody>, facilitando o parse do Pandas
+            script_js = """
+                const seasons = document.getElementById("seasons");
+                const ths = seasons.querySelectorAll("th")
+                return Array.from(ths).map(th => th.outerHTML);
+            """
+            ths = sb.execute_script(script_js)
+            script_js2 = """
+                const tds = seasons.querySelectorAll("td")
+                return Array.from(tds).map(td => td.outerHTML);
+            """
+            tds = sb.execute_script(script_js2)
+            dict_data["ths"] = ths
+            dict_data["tds"] = tds
+        print(f"Encontrei {len(ths)} ths válidos via JavaScript!")
+        print(f"Encontrei {len(tds)} tds válidos via JavaScript!")
+        return dict_data # <-- Este retorno é o "combustível" do próximo método
 
-    def extract_info_files(self):
-        with open(self.file_path) as fp:
-            soup = BeautifulSoup(fp, 'html.parser')
-        return soup
-data = []
-list_header = [] 
-fbrScrapper = FbrScrapper()
-html = fbrScrapper.extract_info_files()
-header = html.find_all("table")[0].find("tr")
-HTML_data = html.find_all("table")[0].find_all("tr")[1:]
+    def parse_data(self, dict_data):
+        ths = dict_data["ths"]
+        tds = dict_data["tds"]
+        soup_ths = list(map(lambda x: BeautifulSoup(x, 'html.parser'), ths))
+        soup_tds = list(map(lambda x: BeautifulSoup(x, 'html.parser'), tds))
 
-for items in header:
-    try:
-        list_header.append(items.get_text())
-    except:
-        continue
-for element in HTML_data:
-    sub_data = []
-    for sub_element in element:
-        try:
-            sub_data.append(sub_element.get_text())
-        except:
-            continue
-    data.append(sub_data)
-dataFrame = pd.DataFrame(data = data, columns = list_header)
-dataFrame.to_json('dados_de_jogos.json')   
+        data = {
+            "seasons": [],
+            "link_season": [],
+            "Competition Name": [],
+            "squads": [],
+            "Champion": [],
+            "Top Scorer": []
+        }
+
+        pattern = re.compile(r"\d{4}-\d{4}")
+        for th in soup_ths:
+            text = th.get_text().strip()
+            if pattern.fullmatch(text):
+                data["seasons"].append(text)
+                data["link_season"].append(th.find("a")["href"])
+        for i in range(0, len(tds), 4):
+            data["Competition Name"].append(tds[i])
+        for i in range(1,len(tds), 4):
+            data["squads"].append(tds[i])
+        for i in range(2,len(tds), 4):
+            data["Champion"].append(tds[i])
+        for i in range(3,len(tds), 4):
+            data["Top Scorer"].append(tds[i])
+        df = pd.DataFrame(data)
+        return df
+    def executar(self):
+        """MÉTODO COORDENADOR: Cria a dependência entre os dois"""
+        # 1. Pega os dados brutos (Passo A)
+        dados_brutos = self.extract_data_from_url(self.url_history)
+        df = self.parse_data(dados_brutos)
+        df.to_json("premier_league_history.json", orient="records", indent=4)
+
+FbrScrapper().executar()
