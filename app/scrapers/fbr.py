@@ -1,6 +1,8 @@
 import pandas as pd
 from bs4 import BeautifulSoup
 from seleniumbase import SB
+import requests
+
 import os
 import re
 
@@ -60,13 +62,16 @@ class FbrScrapper:
             data["Champion"].append(tds[i])
         for i in range(3,len(tds), 4):
             data["Top Scorer"].append(tds[i])
-        df = pd.DataFrame(data)
-        return df
+        return data
     def executar(self):
         """MÉTODO COORDENADOR: Cria a dependência entre os dois"""
         # 1. Pega os dados brutos (Passo A)
         dados_brutos = self.extract_data_from_url(self.url_history)
-        df = self.parse_data(dados_brutos)
-        df.to_json("premier_league_history.json", orient="records", indent=4)
+        data = self.parse_data(dados_brutos)
+        df = pd.DataFrame(data)
+        dados_formatados = df.to_dict(orient="records")
+        
+        response = requests.post("http://localhost:8000/save", json=dados_formatados)
+        #df.to_json("premier_league_history.json", orient="records", indent=4)
 
 FbrScrapper().executar()

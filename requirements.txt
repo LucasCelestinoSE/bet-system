@@ -9,3 +9,4 @@ BeautifulSoup4
 google-genai
 python-dotenv
 python-multipart
+motor

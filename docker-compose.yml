@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   api:
     build: .
@@ -10,6 +8,8 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    depends_on:
+      - mongodb # Garante que o banco suba antes da API
 
   ui:
     build: .
@@ -22,3 +22,20 @@ services:
     env_file:
       - .env
     command: streamlit run app/presentation/home.py --server.port=8501 --server.address=0.0.0.0
+
+  # --- ADICIONE ESTE BLOCO ---
+  mongodb:
+    image: mongo:latest
+    container_name: meu_mongo_local
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=bet_intelligence_db
+    volumes:
+      - mongodata:/data/db # Onde o Mongo guarda os arquivos reais
+
+# NÃO ESQUEÇA DE ADICIONAR O VOLUME NO FINAL
+volumes:
+  pgdata:
+  mongodata: # Adicione esta linha
