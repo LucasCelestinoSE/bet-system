@@ -55,32 +55,45 @@ async def create_upload_file(file: UploadFile):
     return {"filename": file}
 
 
+from typing import Optional
+# Armazenou dados das temporadas , temporada ano , link, times, Campeões,
 @app.get("/seasons")
-async def get_seasons(page: Optional[int] = None, page_size: Optional[int] = None):
+async def get_seasons(
+    page: Optional[int] = None, 
+    page_size: Optional[int] = None,
+    seasons: Optional[str] = None,       # Filtro opcional por temporada
+    link_season: Optional[str] = None    # Filtro opcional por link
+):
     try:
-        # 1. Criamos o cursor de busca (ainda não puxou do banco)
-        cursor = db_mongo.db.seasons.find({})
+        # 1. Construir o Filtro Dinâmico (Query do MongoDB)
+        query_filter = {}
+        
+        if seasons:
+            # Usamos regex 'i' para busca case-insensitive (não importa se é 2025 ou 2025-2026)
+            query_filter["seasons"] = {"$regex": seasons, "$options": "i"}
+            
+        if link_season:
+            query_filter["link_season"] = link_season
 
-        # 2. Lógica de Paginação (Só aplica se AMBOS existirem)
+        # 2. Criar o cursor com o filtro aplicado
+        cursor = db_mongo.db.seasons.find(query_filter)
+
+        # 3. Lógica de Paginação (Mantida)
         if page is not None and page_size is not None:
-            # Cálculo: Pula os itens das páginas anteriores e limita ao tamanho da página
             skip = (page - 1) * page_size
             cursor = cursor.skip(skip).limit(page_size)
 
-        # 3. Converte o cursor em uma lista
-        results = await cursor.to_list(length=1000) # Limite de segurança para não travar a RAM
+        # 4. Executar a busca
+        results = await cursor.to_list(length=1000)
 
-        # 4. TRUQUE: O MongoDB retorna o '_id' como um objeto, o JSON não aceita.
-        # Vamos converter o _id para string em cada item.
+        # 5. Converter ObjectID para String para o JSON não quebrar
         for item in results:
             item["_id"] = str(item["_id"])
 
-        return {
-            "total_na_pagina": len(results),
-            "data": results
-        }
+        return results
         
     except Exception as e:
-        return {"error": str(e)}, 500
+        print(f"Erro na busca: {e}")
+        return {"error": "Falha interna ao buscar dados"}, 500
 
 # main => Adapters => gemini_service => 
