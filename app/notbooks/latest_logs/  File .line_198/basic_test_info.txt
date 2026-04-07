@@ -1,12 +1,12 @@
   File .py:198:SB
 --------------------------------------------------------------------
 Last Page: https://fbref.com/en/comps/
- Duration: 11.75s
+ Duration: 5.80s
   Browser: Chrome 146.0.7680.164
    Driver: chromedriver 146.0.7680.165
-Timestamp: 1775520901  (Unix Timestamp)
+Timestamp: 1775521784  (Unix Timestamp)
      Date: Monday, 6 April 2026
-     Time: 9:15:01 PM  (-03, UTC-03:00)
+     Time: 9:29:44 PM  (-03, UTC-03:00)
 --------------------------------------------------------------------
 Traceback:
   File "/usr/lib/python3/dist-packages/IPython/core/interactiveshell.py", line 3553, in run_code
