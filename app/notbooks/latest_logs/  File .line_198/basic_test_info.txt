@@ -1,17 +1,20 @@
   File .py:198:SB
 --------------------------------------------------------------------
-Last Page: http://127.0.0.1:5500/app/notbooks/site_teste/serie_a/time_3/jogador_3.html
- Duration: 7.28s
-  Browser: Chrome 146.0.7680.164 / headless
+Last Page: https://fbref.com/en/comps/
+ Duration: 5.80s
+  Browser: Chrome 146.0.7680.164
    Driver: chromedriver 146.0.7680.165
-Timestamp: 1775067174  (Unix Timestamp)
-     Date: Wednesday, 1 April 2026
-     Time: 3:12:54 PM  (-03, UTC-03:00)
+Timestamp: 1775521784  (Unix Timestamp)
+     Date: Monday, 6 April 2026
+     Time: 9:29:44 PM  (-03, UTC-03:00)
 --------------------------------------------------------------------
 Traceback:
   File "/usr/lib/python3/dist-packages/IPython/core/interactiveshell.py", line 3553, in run_code
     exec(code_obj, self.user_global_ns, self.user_ns)
-  File "/tmp/ipykernel_9471/2522076795.py", line 33, in <module>
-    fila_de_pesquisa += return_links_from_href(hrefs)
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Exception: return_links_from_href() missing 1 required positional argument: 'base'
+  File "/tmp/ipykernel_7832/3910221027.py", line 28, in <module>
+    print(soup[0])
+          ~~~~^^^
+  File "/home/lucascelestino/.local/lib/python3.12/site-packages/bs4/element.py", line 2401, in __getitem__
+    return self.attrs[key]
+           ~~~~~~~~~~^^^^^
+Exception: 0
